@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <title>ProtonVPN Server Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        #map { height: 100vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const map = L.map('map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+            }).addTo(map);
+
+            try {
+                const response = await fetch("https://api.protonmail.ch/vpn/logicals", {
+                    method: "GET",
+                    headers: { "Referrer-Policy": "no-referrer" }
+                });
+
+                const data = await response.json();
+                if (!data.LogicalServers) throw new Error("Invalid Data");
+
+                data.LogicalServers.forEach(server => {
+                    if (server.Location && server.Location.Lat && server.Location.Long) {
+                        const marker = L.marker([server.Location.Lat, server.Location.Long]).addTo(map);
+                        marker.bindPopup(`<b>${server.Name}</b><br>Exit Country: ${server.ExitCountry}`);
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching VPN data:", error);
+            }
+        });
+    </script>
+</body>
+</html>
