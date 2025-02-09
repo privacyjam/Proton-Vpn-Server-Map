@@ -12,13 +12,44 @@
         .popup-content {
             max-height: 200px;
             overflow-y: auto;
-            width: 300px;
+            width: 320px;
             white-space: nowrap;
+        }
+        #loading {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        .github-link {
+            position: fixed;
+            bottom: 40px;
+            left: 20px;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 12px;
+            border-radius: 8px;
+            z-index: 1100;
+        }
+        .github-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;        
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <div id="loading">Loading VPN server data...</div>
+    <div class="github-link">
+        <a href="https://github.com/jamjamr/Proton-Vpn-Server-Map" target="_blank">🌍 View on GitHub</a>
+    </div>    
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
@@ -48,6 +79,8 @@
                 });
 
                 const data = await response.json();
+                document.getElementById("loading").style.display = "none"; // Hide loading message
+
                 if (!data.LogicalServers) throw new Error("Invalid Data");
 
                 let locationGroups = {};
@@ -71,11 +104,11 @@
 
                     servers.forEach(server => {
                         let smartRouting = server.HostCountry && server.HostCountry !== server.EntryCountry 
-                            ? `<span style="color:red;">(Smart Routing from ${server.HostCountry})</span>` 
+                            ? `<span style="color:red; font-weight:bold;">(Smart Routing from ${server.HostCountry})</span>` 
                             : '';
 
                         let torServer = server.Name.includes("TOR") 
-                            ? `<span style="color:purple;">(TOR Server)</span>` 
+                            ? `<span style="color:purple; font-weight:bold;">(TOR Server)</span>` 
                             : '';
 
                         popupContent += `🔹 <b>${server.Name}</b> - Load: ${server.Load}% ${smartRouting} ${torServer}<br>`;
@@ -91,6 +124,7 @@
 
                 map.addLayer(markerCluster);
             } catch (error) {
+                document.getElementById("loading").textContent = "Failed to load VPN server data.";
                 console.error("Error fetching VPN data:", error);
             }
         });
