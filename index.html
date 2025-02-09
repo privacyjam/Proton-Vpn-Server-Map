@@ -5,12 +5,12 @@
     <meta name="referrer" content="no-referrer">
     <meta name="description" content="A Map of All Proton VPN Locations">
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self'; 
-        script-src 'self' https://unpkg.com https://api.cors.lol 'unsafe-inline'; 
-        style-src 'self' https://unpkg.com 'unsafe-inline'; 
-        img-src 'self' data: https://tile.openstreetmap.org https://unpkg.com; 
-        connect-src 'self' https://api.cors.lol https://api.protonmail.ch; 
-        object-src 'none';">
+    default-src 'self'; 
+    script-src 'self' https://unpkg.com https://api.cors.lol 'unsafe-inline'; 
+    style-src 'self' https://unpkg.com 'unsafe-inline'; 
+    img-src 'self' data: https://tile.openstreetmap.org https://unpkg.com; 
+    connect-src 'self' https://api.cors.lol https://api.protonmail.ch https://protonvpnmapproxy.privacyjam.com; 
+    object-src 'none';">
     <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
@@ -74,29 +74,28 @@
                 zoom: 2, 
                 zoomSnap: 0.5
             });
-
+    
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
             }).addTo(map);
-
+    
             const markerCluster = L.markerClusterGroup({
-                maxClusterRadius: 30,
-                disableClusteringAtZoom: 7,
+                maxClusterRadius: 20,
+                disableClusteringAtZoom: 8,
                 iconCreateFunction: (cluster) => {
                     const childCount = cluster.getChildCount();
                     let clusterClass = 'marker-cluster-small';
                     if (childCount > 10) clusterClass = 'marker-cluster-medium';
                     if (childCount > 50) clusterClass = 'marker-cluster-large';
-            
                     return new L.DivIcon({
                         html: `<div><span>${childCount}</span></div>`,
                         className: `marker-cluster ${clusterClass}`,
-                        iconSize: [40, 40]
+                        iconSize: [30, 30],
                     });
-                }
-            });
-
+                },
+            });            
+    
             const defaultIcon = L.icon({
                 iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
                 shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
@@ -105,20 +104,38 @@
                 popupAnchor: [1, -34],
                 shadowSize: [41, 41]
             });
-
+    
+            async function fetchData() {
+                const urls = [
+                    "https://api.cors.lol/?url=https://api.protonmail.ch/vpn/logicals",
+                    "https://protonvpnmapproxy.privacyjam.com"
+                ];
+    
+                for (let url of urls) {
+                    try {
+                        const response = await fetch(url, {
+                            method: "GET",
+                            headers: { "Referrer-Policy": "no-referrer" }
+                        });
+                        if (response.ok) {
+                            return await response.json();
+                        }
+                    } catch (error) {
+                        console.warn(`Failed to fetch from ${url}:`, error);
+                    }
+                }
+    
+                throw new Error("All API sources failed.");
+            }
+    
             try {
-                const response = await fetch("https://api.cors.lol/?url=https://api.protonmail.ch/vpn/logicals", {
-                    method: "GET",
-                    headers: { "Referrer-Policy": "no-referrer" }
-                });
-
-                const data = await response.json();
+                const data = await fetchData();
                 document.getElementById("loading").style.display = "none";
-
+    
                 if (!data.LogicalServers) throw new Error("Invalid Data");
-
+    
                 let locationGroups = {};
-
+    
                 data.LogicalServers.forEach(server => {
                     if (server.Location && server.Location.Lat && server.Location.Long) {
                         const key = `${server.Location.Lat.toFixed(2)},${server.Location.Long.toFixed(2)}`;
@@ -128,19 +145,19 @@
                         locationGroups[key].push(server);
                     }
                 });
-
+    
                 Object.entries(locationGroups).forEach(([key, servers]) => {
                     const [lat, lon] = key.split(',').map(Number);
                     const locationName = servers[0].City ? servers[0].City : servers[0].EntryCountry;
-
+    
                     let popupContent = `<b>${locationName}</b><br>`;
                     popupContent += `<b>${servers.length} Servers</b><br><div class="popup-content">`;
-
+    
                     servers.forEach(server => {
                         let smartRouting = server.HostCountry && server.HostCountry !== server.EntryCountry 
                             ? `<span style="color:red; font-weight:bold;">(Smart Routing from ${server.HostCountry})</span>` 
                             : '';
-
+    
                         let torServer = server.Name.includes("TOR") 
                             ? `<span style="color:purple; font-weight:bold;">(TOR Server)</span>` 
                             : '';
@@ -153,15 +170,15 @@
                         
                         popupContent += `🔹 <b>${server.Name}</b> - Load: ${server.Load}% ${smartRouting} ${torServer} ${secureCore}<br>`;
                     });
-
+    
                     popupContent += `</div>`;
-
+    
                     const marker = L.marker([lat, lon], { icon: defaultIcon })
                         .bindPopup(popupContent, { maxWidth: 350 });
-
+    
                     markerCluster.addLayer(marker);
                 });
-
+    
                 map.addLayer(markerCluster);
             } catch (error) {
                 document.getElementById("loading").textContent = "Failed to load VPN server data.";
@@ -169,5 +186,6 @@
             }
         });
     </script>
+    
 </body>
 </html>
