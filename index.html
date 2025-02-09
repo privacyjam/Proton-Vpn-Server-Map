@@ -111,9 +111,15 @@
                         let torServer = server.Name.includes("TOR") 
                             ? `<span style="color:purple; font-weight:bold;">(TOR Server)</span>` 
                             : '';
-
-                        popupContent += `🔹 <b>${server.Name}</b> - Load: ${server.Load}% ${smartRouting} ${torServer}<br>`;
-                    });
+                        
+                            let secureCore = (server.Features === 1 && server.EntryCountry !== server.ExitCountry) 
+                            ? `<span style="color:orange; font-weight:bold;">(Secure Core from ${server.EntryCountry})</span>` 
+                            : (server.Features === 1) 
+                                ? `<span style="color:orange; font-weight:bold;">(Secure Core Server)</span>` 
+                                : '';
+                        
+                                popupContent += `🔹 <b>${server.Name}</b> - Load: ${server.Load}% ${smartRouting} ${torServer} ${secureCore}<br>`;
+                            });
 
                     popupContent += `</div>`;
 
