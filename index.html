@@ -21,7 +21,7 @@
             }).addTo(map);
 
             try {
-                const response = await fetch("https://api.protonmail.ch/vpn/logicals", {
+                const response = await fetch("https://corsproxy.io/?https://api.protonmail.ch/vpn/logicals", {
                     method: "GET",
                     headers: { "Referrer-Policy": "no-referrer" }
                 });
