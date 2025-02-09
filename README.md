@@ -6,3 +6,6 @@
 
 ## Shows Tor Server Notice
 ![image](https://github.com/user-attachments/assets/037c32d1-0e42-4f40-8b3d-fac440aad61e)
+
+## Shows Secure Core Notice
+![image](https://github.com/user-attachments/assets/3fb42692-d392-4eae-9112-7320f59614b0)
