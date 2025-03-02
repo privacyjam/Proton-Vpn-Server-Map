@@ -1,4 +1,4 @@
-### Getting rate limited alot, should have a good fix now
+### Getting rate limited alot, should have a good fix now. Made my own caching proxy.
 
 ## Proton VPN Server Map
 ![image](https://github.com/user-attachments/assets/6b0299c8-5a2f-4c70-85b2-bcd62735c07a)
