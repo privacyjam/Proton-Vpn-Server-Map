@@ -1,4 +1,4 @@
-Proton has just changed the logic url to where you need an account token (just auth thing) to get the json, so unfortunatly I will have to resort to hosting a stale response. I'll try to update it every like month or if big upgrades happen.
+Proton has just changed the logic url to where you need an account token (just auth thing) to get the json, so unfortunatly I will have to resort to hosting a stale response. I'll try to update it every like 2 weeks or if big upgrades happen.
 
 ## Proton VPN Server Map
 ![image](https://github.com/user-attachments/assets/6b0299c8-5a2f-4c70-85b2-bcd62735c07a)
