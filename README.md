@@ -1,7 +1,7 @@
 To get the location data it gets it from api.protonmail.ch/vpn/logicals proxying via these, if the first one fails it moves on to next
 1. api.cors.lol
-2. protonvpnmapproxy.privacyjam.com
-3. protonvpnmap.privacyjam.com/backup_logicals.json *This is a last resort stale file
+3. json hosted here on Github
+3. protonvpnmapproxy.privacyjam.com
 
 ## Proton VPN Server Map
 ![image](https://github.com/user-attachments/assets/6b0299c8-5a2f-4c70-85b2-bcd62735c07a)
