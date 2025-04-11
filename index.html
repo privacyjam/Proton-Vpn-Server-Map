@@ -9,7 +9,7 @@
     script-src 'self' https://unpkg.com https://api.cors.lol 'unsafe-inline'; 
     style-src 'self' https://unpkg.com 'unsafe-inline'; 
     img-src 'self' data: https://tile.openstreetmap.org https://unpkg.com; 
-    connect-src 'self' https://api.cors.lol https://api.protonmail.ch https://protonvpnmapproxy.privacyjam.com https://raw.githubusercontent.com; 
+    connect-src 'self' https://raw.githubusercontent.com; 
     object-src 'none';">
   <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains; preload">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -107,9 +107,7 @@
   
       async function fetchData() {
         const urls = [
-          "https://api.cors.lol/?url=https://api.protonmail.ch/vpn/logicals",
           "https://raw.githubusercontent.com/privacyjam/Proton-Vpn-Server-Map/refs/heads/main/backup_logicals.json",
-          "https://protonvpnmapproxy.privacyjam.com"
         ];
   
         for (let url of urls) {
